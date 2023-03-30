@@ -19,7 +19,16 @@ public class Tabuleiro {
         this.filhos = new ArrayList<>();
         this.pontuacao = pontos;
     }
-
+    // print recussively the method filhos until the leaf node 
+    public void printFilhos() {
+        for (Tabuleiro filho : filhos) {
+            for (Jogada jogada : filho.jogadas) {
+                System.out.print(" - " + jogada.getLinha() + " " + jogada.getColuna());
+            }
+            System.out.println(" - " + filho.pontuacao);
+            filho.printFilhos();
+        }
+    }
     public void gerarFilhos(int jogador) {
         if (jogoAcabou()) {
             return;
@@ -53,7 +62,7 @@ public class Tabuleiro {
         if (jogoAcabou() || depth == 0) {
             return pontuacao;
         }
-        System.out.println(isMax);
+    
         if (isMax) {
             int maxEval = Integer.MIN_VALUE;
             for (Tabuleiro filho : filhos) {
@@ -78,14 +87,9 @@ public class Tabuleiro {
             return minEval;
         }
     }
-   // get the current Tabuleiro given the tabuleiro in the arraylist
-    public void getTabuleiroFilho(){
-        for(Jogada jogada : jogadas){
-            System.out.println(jogada.getLinha() + " " + jogada.getColuna());
-        }
-    }
+    
     public Jogada melhorMovimento(int jogador, int depth) {
-        
+        gerarFilhos(jogador);
         int melhorJogada = -1;
         int melhorPontuacao = jogador == 1 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         int alpha = Integer.MIN_VALUE;
@@ -109,8 +113,15 @@ public class Tabuleiro {
                 break;
             }
         }
-        System.out.println("melhor jogada " +melhorJogada);
-        return jogadas.get(melhorJogada);
+    
+        return filhos.get(melhorJogada).getLastJogada();
+    }
+    
+    public Jogada getLastJogada() {
+        if (jogadas.isEmpty()) {
+            return null;
+        }
+        return jogadas.get(jogadas.size() - 1);
     }
     
 
@@ -172,7 +183,13 @@ public class Tabuleiro {
     }
 
     boolean posicaoValida(int i, int j) {
-    	if (i == 1 && (j == 0 || j == 2 || j == 4)) {
+        if(i == 0 && (j == 0|| j == 2 ||j == 4)) {
+            return false;
+        }
+        if((i == 3) && (j == 0 || j == 2 || j == 4)) {
+            return false;
+        }
+    	if (i == 1 && (j == 1 || j == 3)) {
             return false;
         }
         if (i == 2 && (j == 0 || j == 2 || j == 4)) {
